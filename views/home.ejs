@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HIThere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        .telegram-button {
+
+            position: fixed;
+
+            bottom: 120px;
+
+            right: 20px;
+
+            width: 43px;
+
+            height: 43px;
+
+            background-color: white;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: #ffffff;
+
+            font-size: 24px;
+
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+
+            cursor: pointer;
+
+            transition: background-color 0.3s ease;
+
+        }
+
+        .telegram-button:hover {
+
+            background-color: rgba(44, 183, 253, 0.816);
+
+        }
+
+        .telegram-button svg {
+
+            width: 30px;
+
+            height: 30px;
+
+            transition: transform 0.3s ease;
+
+        }
+
+        .telegram-button:hover svg {
+
+            transform: rotate(360deg);
+
+        }
+    </style>
+    <style>
+        .content-box {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            position: absolute;
+            width: 100%;
+        }
+
+        .active-box {
+            opacity: 1;
+            transition: opacity 0.5s ease;
+            position: relative;
+            width: 100%;
+        }
+
+        img {
+            width: 75% !important;
+            height: 50vh !important;
+            align-self: center;
+            background: #ffffff;
+            /* background-color: white; */
+            border-radius: 5px;
+        }
+        .card{
+            max-width: fit-content;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <ul class="nav justify-content-center mb-5 mt-3">
+            <li class="nav-item">
+                <button class="nav-link active" aria-current="page" id="homeBtn">Home</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="youtubeBtn">Youtube</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="instagramBtn">Instagram</button>
+            </li>
+            <!-- <li class="nav-item">
+          <a class="nav-link disabled" aria-disabled="true">Coming Soon</a>
+        </li> -->
+        </ul>
+    </nav>
+    <div>
+        <div id="home" class="content-box active-box">
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="card" id="ytcard">
+                            <img src="https://res.cloudinary.com/dciyhiktqa/image/upload/v1729275584/fvtzf17hxekrx27f22dh.png"
+                                class="card-img-top" alt="youtube">
+                            <div class="card-body">
+
+                                <h5 class="card-title">Youtube Download</h5>
+
+                                <p class="card-text">Click this to download youtube video or shorts of your prefred
+                                    quality.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="card" id="instacard">
+                            <img src="https://res.cloudinary.com/dciyhiktqa/image/upload/v1729274427/uexaxqcgumrz7w3pjsbi.jpg"
+                                class="card-img-top" alt="instagram">
+
+                            <div class="card-body">
+                                <h5 class="card-title">Instagram Download</h5>
+                                <p class="card-text">Click this to download Instagram Posts, Reels and Stories of Public
+                                    account.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div id="youtubeBox" class="content-box">
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col">
+                        <p class="h3">Youtube Downloader</p>
+                        <p class="lead">Enter the Youtube Video or Shorts Video link below to download.</p>
+                        <div class="input-group mb-3" style="max-width: 700px; margin-left: auto; margin-right: auto;">
+                            <input type="text" class="form-control" placeholder="https://youtube.com/..."
+                                aria-label="youtube" aria-describedby="button-addon2">
+                            <button class="btn btn-outline-primary" type="Button" id="button-addon2">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="instagramBox" class="content-box">
+            <div class="container text-center">
+                <div class="row">
+
+                    <div class="col">
+                        <p class="h3">Instagram Downloader</p>
+                        <p class="lead">Enter the Instagram Post, Reel or Story link below to download.</p>
+                        <div class="input-group mb-3" style="max-width: 700px; margin-left: auto; margin-right: auto;">
+                            <input type="text" class="form-control" placeholder="https://instagram.com/..."
+                                aria-label="Recipient's username" aria-describedby="button-addon2" id="insta">
+                            <button class="btn btn-outline-primary" type="Button" id="btn1">Search</button>
+                        </div>
+                    </div>
+                    <!-- <div id="insta1">
+                        <a href="" id="a" hidden>Download</a>
+                        <img id="instaImage" height="500px"  src="" alt="" hidden/>
+                    </div> -->
+                    
+                    <div class="container text-center">
+                        <div class="row" id="instalist">
+                          <!-- <div class="col">
+                            <div class="card">
+                                <img src="..." class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <a class="btn btn-primary" role="button">Download</a>
+                                  </div>
+                              </div>
+                          </div> -->
+                        </div>
+                      </div>
+
+
+                </div>
+            </div>
+        </div>
+</div>
+
+     
+    
+
+
+
+        <a href="https://t.me/HiThereForInsta_bot" target="_blank" class="telegram-button">
+            <svg viewbox="0 0 64 64">
+                <path
+                    d="M56.4,8.2l-51.2,20c-1.7,0.6-1.6,3,0.1,3.5l9.7,2.9c2.1,0.6,3.8,2.2,4.4,4.3l3.8,12.1c0.5,1.6,2.5,2.1,3.7,0.9l5.2-5.3c0.9-0.9,2.2-1,3.2-0.3l11.5,8.4c1.6,1.2,3.9,0.3,4.3-1.7l8.7-41.8C60.4,9.1,58.4,7.4,56.4,8.2z M50,17.4L29.4,35.6c-1.1,1-1.9,2.4-2,3.9c-0.2,1.5-2.3,1.7-2.8,0.3l-0.9-3c-0.7-2.2,0.2-4.5,2.1-5.7l23.5-14.6C49.9,16.1,50.5,16.9,50,17.4z" />
+            </svg>
+        </a>
+       
+       
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+
+        <script>
+            const youtube = document.getElementById('youtubeBtn');
+            const instagram = document.getElementById('instagramBtn');
+            const home = document.getElementById('home');
+            const homeBtn = document.getElementById('homeBtn');
+            const youtubeBox = document.getElementById('youtubeBox');
+            const instagramBox = document.getElementById('instagramBox');
+            const htmltag = document.documentElement;
+            const ytcard = document.getElementById('ytcard');
+            const instacard = document.getElementById('instacard');
+
+
+            const btn1 = document.getElementById('btn1');
+            const insta = document.getElementById('insta');
+            const insta1 = document.getElementById('insta1');
+            const instalist = document.getElementById('instalist');
+
+            //get the browser theme 
+            //window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            //    const newColorScheme = event.matches ? "dark" : "light";
+            //});
+
+
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            }
+
+            function switchContent(showElement, hideElement1, hideElement2) {
+                showElement.classList.add('active-box');
+                hideElement1.classList.remove('active-box');
+                hideElement2.classList.remove('active-box');
+            }
+
+            youtube.addEventListener('click', () => {
+                switchContent(youtubeBox, instagramBox, home);
+                home.hidden = true;
+            });
+
+            instagram.addEventListener('click', () => {
+                switchContent(instagramBox, youtubeBox, home);
+                home.hidden = true;
+            });
+
+            homeBtn.addEventListener('click', () => {
+                switchContent(home, youtubeBox, instagramBox);
+                home.hidden = false;
+            });
+
+            ytcard.addEventListener('click', () => {
+                switchContent(youtubeBox, instagramBox, home);
+            });
+
+            instacard.addEventListener('click', () => {
+                switchContent(instagramBox, youtubeBox, home);
+            });
+
+
+            btn1.addEventListener('click', async () => {
+                const value = insta.value;
+                fetch('/link',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ "url": value }),
+                    formData: {
+                        'instagramUrl': value
+                    }
+                    //add as body from input field
+                    
+                    })
+                .then(res => res.json())
+                .then(data => {
+        
+                    //why data is not getting in this 
+                    
+                    console.log(data);
+                    
+                    data.map((item, key) => {
+                        let card = document.createElement('div');
+                        card.classList.add('col');
+                        card.innerHTML = `
+                        <div class="card">
+                            <img src="${item.thumbnail}" class="card-img-top" alt="${key}">
+                            <div class="card-body">
+                                <a class="btn btn-primary" role="button" href=${item.url}>Download</a>
+                            </div>
+                        </div>
+                        `;
+                        instalist.appendChild(card);
+                    })
+
+
+                    //a.href = "";
+                    //insta1.appendChild(a);
+                   // a.hidden = false;
+                    //console.log(data);
+                })
+            })
+
+
+
+
+        </script>
+</body>
+
+</html>
