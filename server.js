@@ -117,15 +117,15 @@ const TelegramBot = require('node-telegram-bot-api');
 const path = require('path');
 const e = require('express');
 // replace the value below with the Telegram token you receive from @BotFather
-const token = process.env.TELEGRAM_BOT_TOKEN;
+// const token = dotenv.config().parsed.TELEGRAM_TOKEN;
+const token = "7505850569:AAFleDscypJCq12usa5Dsn_iuVCrZ8FeDEA";
 
 // Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, {polling: true, filepath: false});
+const bot = new TelegramBot(token, {filepath: false});
 bot.setMyCommands([
     {command: '/start', description: 'Start the bot'},
     {command: '/about', description: 'About the bot'},
 ]);
-
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
@@ -145,28 +145,35 @@ bot.on('message', async (msg) => {
         
     const chatId = msg.chat.id;
   
-    // Check if the message is a URL
     if (isUrl(msg.text)) {
       bot.sendMessage(chatId, 'File In Progress..' );
+      bot.sendSticker(chatId, 'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif');
   
-      const url = msg.text;
+      let url = msg.text;
+      
       try {
-        const data = removeDuplicates(await igdl(url));
-        console.log(data);
-        const mediaUrl = data[0].url;
-
-        if(mediaUrl == undefined){
-            bot.sendMessage(chatId, 'The User has a private account or send the wrong link');
+        // console.log(await igdl(url));
+       
+        const list = await igdl(url);
+        if(list == 'Request Failed With Code 401'){
+            bot.sendMessage(chatId, 'The User has a private account or send the wrong link.');
         }else{
-            // console.log(data.length);
-            
-            
+            const data = removeDuplicates(list);
+
+            console.log(data);
+
             if(data.length > 1){
                 for(let i = 0; i < data.length; i++){
                     await bot.sendPhoto(chatId, data[i].url);
                 }
             }else{
-                await bot.sendVideo(chatId, mediaUrl+'.mp4');
+                let mediaUrl = data[0].url;
+                if(verifyVideoOrImage(mediaUrl)){
+                    await bot.sendVideo(chatId, mediaUrl+'.mp4');
+                }
+                else{
+                    await bot.sendPhoto(chatId, mediaUrl);
+                }
             }
             await bot.deleteMessage(chatId, msg.message_id+1);
         }
@@ -182,6 +189,17 @@ bot.on('message', async (msg) => {
 
     }
 });
+
+function verifyVideoOrImage(mediaUrl) {
+  if (mediaUrl.includes('https://d.rapidcdn.app')) {
+    return true;
+  }else if(mediaUrl.includes('https://scontent.cdninstagram.com')){
+    return false;
+  }else{
+    return false;
+  }
+}
+
 
 
 // Function to check if the message is a URL
