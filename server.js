@@ -118,7 +118,7 @@ const path = require('path');
 const e = require('express');
 // replace the value below with the Telegram token you receive from @BotFather
 // const token = dotenv.config().parsed.TELEGRAM_TOKEN;
-const token = "7505850569:AAFleDscypJCq12usa5Dsn_iuVCrZ8FeDEA";
+const token = process.env.TELEGRAM_TOKEN;
 
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, {filepath: false});
