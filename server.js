@@ -92,8 +92,8 @@ app.listen(port, () => {
 const TelegramBot = require('node-telegram-bot-api');
 const e = require('express');
 
-// const token = process.env.TELEGRAM_TOKEN;
-const token = '7505850569:AAFleDscypJCq12usa5Dsn_iuVCrZ8FeDEA';
+const token = process.env.TELEGRAM_TOKEN;
+
 
 const bot = new TelegramBot(token, {filepath: false,polling: true});
 bot.setMyCommands([
@@ -139,11 +139,24 @@ bot.on('message', async (msg) => {
                 }
             }else{
                 let mediaUrl = data[0].url;
+                const options = {
+                  reply_markup: {
+                    inline_keyboard: [
+                      [
+                        {
+                          text: 'Direct Download',
+                          url: mediaUrl  // Replace with your desired URL
+                        }
+                      ]
+                    ]
+                  }
+                };
                 if(verifyVideoOrImage(mediaUrl)){
-                    await bot.sendVideo(chatId, mediaUrl+'.mp4');
+
+                    await bot.sendVideo(chatId, mediaUrl+'.mp4', options);
                 }
                 else{
-                    await bot.sendPhoto(chatId, mediaUrl);
+                    await bot.sendPhoto(chatId, mediaUrl, options);
                 }
             }
             await bot.deleteMessage(chatId, msg.message_id+1);
