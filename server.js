@@ -1,5 +1,3 @@
-//create server and listen on port 3000
-//user enviroment variable to set port number
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,49 +9,16 @@ const dotenv = require('dotenv');
 
 app.use(cros());
 
-//this is an server for an instagram post or reel downloader
-//user will send the link of the post or reel and server will send the direct download link
-//to the user
 const { igdl,youtube } = require('btch-downloader')
 
-const a = async () => {
-    const url = 'https://www.instagram.com/reel/C_ffkXjAXsf/?igsh=MXV0N2ZtYjMxZ3VvdA=='
-    const data = await igdl(url)
-    console.log(data) // JSON
-}
-// const { youtube } = require('btch-downloader')
 
-// const a = async () => {
-//     const url = 'https://youtu.be/wsfb3qBOHc0?si=z6Johd_1F-yRHA4x'
-//     const data = await youtube(url)
-//     console.log(data) // JSON
-// }
-// a()
 app.set('view engine', 'ejs');
 
 
 app.get('/', (req, res) => {
     res.render('home');
 });
-const postUrl = 'https://www.instagram.com/reel/C_ffkXjAXsf/?igsh=MXV0N2ZtYjMxZ3VvdA==';
-app.get('/a', (req, res) => {
-    let ad;
-    axios.get(postUrl).then((data1) => {
 
-        // console.log(res.data);
-            const data = data1.data;
-            
-           
-            const $ = cheerio.load(data);
-           
-                
-            const img = $('img');
-            
-            console.log(img.html());
-            res.send($.html());
-    });
-    
-});
 
 //json data
 app.use(express.json());
@@ -63,15 +28,26 @@ app.get('/ping', (req, res) => {
 });
 
 
-app.post('/link', async (req, res) => {
+app.post('/instagram', async (req, res) => {
     let url = req.body.url;
-    // const url = 'https://www.instagram.com/reel/C_ffkXjAXsf/?igsh=MXV0N2ZtYjMxZ3VvdA=='
     try{
-    console.log(url);
-    const data = removeDuplicates(await igdl(url));
-    console.log(data) // JSON
-    
-    res.send(data).status(200);
+    if(!isUrl(url)){
+        res.send({error: 'Please send a valid link', status: 400}).status(400);
+    }else{
+        const urlRes = await igdl(url);
+        if(urlRes == 'Request Failed With Code 401'){
+            res.send({error: 'The User has a private account or send the wrong link.', status: 401}).status(400);
+        }else{
+        const data = removeDuplicates(urlRes);
+
+          if(verifyVideoOrImage(data[0].url)){
+            res.send(data).status(200);
+          }else{
+            res.send(data).status(200);
+        }
+
+        }
+    }
     }catch(err){
         console.log(err);
         res.send(err).
@@ -114,14 +90,12 @@ app.listen(port, () => {
 
 
 const TelegramBot = require('node-telegram-bot-api');
-const path = require('path');
 const e = require('express');
-// replace the value below with the Telegram token you receive from @BotFather
-// const token = dotenv.config().parsed.TELEGRAM_TOKEN;
-const token = process.env.TELEGRAM_TOKEN;
 
-// Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, {filepath: false});
+// const token = process.env.TELEGRAM_TOKEN;
+const token = '7505850569:AAFleDscypJCq12usa5Dsn_iuVCrZ8FeDEA';
+
+const bot = new TelegramBot(token, {filepath: false,polling: true});
 bot.setMyCommands([
     {command: '/start', description: 'Start the bot'},
     {command: '/about', description: 'About the bot'},
@@ -147,20 +121,17 @@ bot.on('message', async (msg) => {
   
     if (isUrl(msg.text)) {
       bot.sendMessage(chatId, 'File In Progress..' );
-      bot.sendSticker(chatId, 'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif');
-  
+     
       let url = msg.text;
       
-      try {
-        // console.log(await igdl(url));
-       
+      try {       
         const list = await igdl(url);
         if(list == 'Request Failed With Code 401'){
             bot.sendMessage(chatId, 'The User has a private account or send the wrong link.');
         }else{
             const data = removeDuplicates(list);
 
-            console.log(data);
+            // console.log(data);
 
             if(data.length > 1){
                 for(let i = 0; i < data.length; i++){
@@ -209,9 +180,3 @@ function isUrl(message) {
 }
 
 
-
-
-// //funtion to delete the send file
-// function deleteFile(filePath) {
-//   fs.unlinkSync(filePath);
-// }
