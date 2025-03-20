@@ -7,7 +7,7 @@ const ytdl = require('ytdl-core');
 dotenv.config();
 app.use(cros());
 
-// const { igdl,youtube } = require('btch-downloader')
+const { igdl} = require('btch-downloader')
 
 
 app.set('view engine', 'ejs');
@@ -30,7 +30,7 @@ app.get('/ping', (req, res) => {
 
 
 app.post('/instagram', async (req, res) => {
-    console.log(req.ip);
+    // console.log(req.ip);
     let url = req.body.url;
     try{
     if(!isUrl(url)){
@@ -95,7 +95,7 @@ app.listen(port, () => {
 
 
 const TelegramBot = require('node-telegram-bot-api');
-const e = require('express');
+// const e = require('express');
 
 const token = process.env.TELEGRAM_TOKEN;
 // const token = '7505850569:AAFleDscypJCq12usa5Dsn_iuVCrZ8FeDEA';
@@ -136,7 +136,7 @@ bot.on('message', async (msg) => {
         }else{
             const data = removeDuplicates(list);
 
-            console.log(data);
+            // console.log(data);
             
             if(data.length > 1){
                 for(let i = 0; i < data.length; i++){
