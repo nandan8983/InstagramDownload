@@ -2,14 +2,12 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 const cros = require('cors');
-const cheerio = require('cheerio');
-const axios = require('axios');
 const dotenv = require('dotenv');
-
-
+const ytdl = require('ytdl-core');
+dotenv.config();
 app.use(cros());
 
-const { igdl,youtube } = require('btch-downloader')
+// const { igdl,youtube } = require('btch-downloader')
 
 
 app.set('view engine', 'ejs');
@@ -19,6 +17,9 @@ app.get('/', (req, res) => {
     res.render('home');
 });
 
+app.get('/MCPE', (req, res) => {
+  res.render('MCPE');
+});
 
 //json data
 app.use(express.json());
@@ -29,6 +30,7 @@ app.get('/ping', (req, res) => {
 
 
 app.post('/instagram', async (req, res) => {
+    console.log(req.ip);
     let url = req.body.url;
     try{
     if(!isUrl(url)){
@@ -73,14 +75,17 @@ function removeDuplicates(images) {
 app.post('/youtube', async (req, res) => {
     let url = req.body.url;
     try{
-    console.log(url);
-    const data = await youtube(url);
-    console.log(data); // JSON
+      console.log(url);
+      // const data = await youtube(url);
+      const ID = ytdl.getVideoID(url);
+      const data = await ytdl.getInfo(ID);
+      res.json(data).status(200);
 
     }catch(err){
         console.log(err);
     }
 });
+
 
 
 app.listen(port, () => {
@@ -93,7 +98,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const e = require('express');
 
 const token = process.env.TELEGRAM_TOKEN;
-
+// const token = '7505850569:AAFleDscypJCq12usa5Dsn_iuVCrZ8FeDEA';
 
 const bot = new TelegramBot(token, {filepath: false,polling: true});
 bot.setMyCommands([
@@ -131,14 +136,20 @@ bot.on('message', async (msg) => {
         }else{
             const data = removeDuplicates(list);
 
-            // console.log(data);
-
+            console.log(data);
+            
             if(data.length > 1){
                 for(let i = 0; i < data.length; i++){
-                    await bot.sendPhoto(chatId, data[i].url);
+                  if(verifyVideoOrImage(data[i].url)){
+
+                    await bot.sendVideo(chatId, data[i].url+'.mp4');
+                }
+                else{
+                    await bot.sendVideo(chatId, data[i].url);
+                }
                 }
             }else{
-                let mediaUrl = data[0].url;
+              let mediaUrl = data[0].url;
                 const options = {
                   reply_markup: {
                     inline_keyboard: [
@@ -151,12 +162,13 @@ bot.on('message', async (msg) => {
                     ]
                   }
                 };
+                
                 if(verifyVideoOrImage(mediaUrl)){
 
                     await bot.sendVideo(chatId, mediaUrl+'.mp4', options);
                 }
                 else{
-                    await bot.sendPhoto(chatId, mediaUrl, options);
+                    await bot.sendVideo(chatId, mediaUrl, options);
                 }
             }
             await bot.deleteMessage(chatId, msg.message_id+1);
@@ -175,9 +187,10 @@ bot.on('message', async (msg) => {
 });
 
 function verifyVideoOrImage(mediaUrl) {
-  if (mediaUrl.includes('https://d.rapidcdn.app')) {
+  console.log(mediaUrl);
+  if (mediaUrl.includes('https://d.rapidcdn.app/d?token=')) {
     return true;
-  }else if(mediaUrl.includes('https://scontent.cdninstagram.com')){
+  }else if(mediaUrl.includes('https://scontent.cdninstagram.com/v/')){
     return false;
   }else{
     return false;
@@ -191,5 +204,4 @@ function isUrl(message) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   return urlRegex.test(message);
 }
-
 

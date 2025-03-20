@@ -225,8 +225,14 @@
                             <div class="input-group mb-3"
                                 style="max-width: 700px; margin-left: auto; margin-right: auto;">
                                 <input type="text" class="form-control" placeholder="https://youtube.com/..."
-                                    aria-label="youtube" aria-describedby="button-addon2">
+                                    aria-label="youtube" aria-describedby="button-addon2" id="youtube">
                                 <button class="btn btn-outline-primary" type="Button" id="button-addon2">Search</button>
+                            </div>
+                        </div>
+                        <div class="container text-center">
+                            <div class="row row-cols-1"
+                                style="display: ruby;" id="ytlist">
+                            
                             </div>
                         </div>
                     </div>
@@ -272,6 +278,9 @@
         const insta1 = document.getElementById('insta1');
         const instalist = document.getElementById('instalist');
         const pasteButton = document.getElementById('btn2');
+        const ytbox = document.getElementById('youtube');
+        const ytbtn = document.getElementById('button-addon2');
+        const ytlist = document.getElementById('ytlist');
 
         themeBtn.addEventListener('click', () => {
             if (htmltag.getAttribute('data-bs-theme') === 'dark') {
@@ -339,6 +348,77 @@
         })
 
 
+        ytbtn.addEventListener('click', () => {
+            ytlist.innerHTML = '';
+            let url = ytbox.value;
+            fetch('/youtube', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ "url": ytbox.value })
+            }).then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    const video = document.createElement('video');
+                    video.src = data.bestFormat.url;
+                    video.controls = true;
+                    video.autoplay = false;
+                    video.style = 'max-width: 1000px; margin-left: auto; margin-right: auto;';
+                    video.classList.add('mb-3');
+                    ytlist.appendChild(video);
+                    const d1 = document.createElement('div');
+                    d1.classList.add('mb-3', 'card');
+                    d1.style = 'max-width: 1000px; margin-left: auto; margin-right: auto;';
+                    
+                    d1.innerHTML = `<div class="row g-0">
+                                            <div class="col-md-5">
+                                            <img src="${data.videoDetails.thumbnails[4].url}" class="img-fluid rounded-start" alt="${data.videoDetails.title}">
+                                            
+                                            </div>
+                                            <div class="col-md-7">
+                                            <div class="card-body">
+                                                <h5 class="card-title" style="text-align: start;">${data.videoDetails.title}</h5>
+                                                <p class="card-text" style="text-align: start;">Channal Name: ${data.videoDetails.ownerChannelName}</small></p>
+                                                <a href="${data.bestFormat.url}" download="${data.videoDetails.title}">
+                                                    <button class="btn btn-primary"  role="button">Download</button>
+                                                </a>
+                                            </div>
+                                            </div>
+                                        </div>
+                                       `;
+                    var audio128 = data.formats.map((item, key) => {
+                        if(item.audioBitrate == 128 && item.container == 'm4a'){
+                            return item.url;
+                        }
+                    });
+                    /*const d2 = document.createElement('div');
+                    d2.classList.add('mb-3');
+                    d2.style = 'max-width: 1000px; margin-left: auto; margin-right: auto;';    
+                    d2.innerHTML = `<ul class="list-group">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                A list item
+                                                <span class="badge text-bg-primary rounded-pill">14</span>
+                                            </li>
+                                            ${data.formats.map((item, key) => {
+                                                        
+                                                        return `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            ${item.qualityLabel}
+                                                            <button class="btn btn-primary" role="button" onclick="mergeVideo(${item.url},${audio128})">Download</button>
+                                                            </li>`;
+
+                                                        
+                                            }).join('')} 
+                                        </ul>`;*/
+                    ytlist.appendChild(d1);
+                   // ytlist.appendChild(d2);
+                    
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                });
+        })
+
         btn1.addEventListener('click', async () => {
             if (btn1.innerText === 'Search') {
                 instalist.innerHTML = '';
@@ -381,7 +461,7 @@
                             card.classList.add('col');
                             card.innerHTML = `
                         <div class="card mt-3 mx-auto">
-                            <img src="${item.thumbnail}" class="card-img-top listImg" alt="${key}"/>
+                            <img src="${item.url}" class="card-img-top listImg" alt="${key}"/>
                             <div class="card-body">
                                 <button class="btn btn-primary" role="button" onclick="changeName('${item.url}')">Download</button>
                             </div>
@@ -413,6 +493,18 @@
             anchorElement.download = fileName;
             anchorElement.click();
         }
+
+
+        async function mergeVideo(video, audio) {
+            let { createFFmpeg, fetchFile } = FFmpeg;
+            let ffmpeg = createFFmpeg();
+            await ffmpeg.load();
+            ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(video));
+            ffmpeg.FS('writeFile', 'audio.mp4', await fetchFile(audio));
+            await ffmpeg.run('-i', 'video.mp4', '-i', 'audio.mp4', '-c', 'copy', 'output.mp4');
+            let data = await ffmpeg.FS('readFile', 'output.mp4');
+            return new Uint8Array(data.buffer);
+        };
     </script>
 </body>
 
